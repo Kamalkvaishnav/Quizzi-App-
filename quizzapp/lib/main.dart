@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quizzapp/ScreenUI/TeacherUI/teacherHomepage.dart';
+import 'package:quizzapp/ScreenUI/TeacherUI/teacherInfo.dart';
 
 import 'Authantication/authantication_service.dart';
 import 'DataBase/databadeManager.dart';
@@ -64,8 +65,8 @@ class _AuthanticationWrapperState extends State<AuthanticationWrapper> {
   Widget build(BuildContext context) {
     final appuser = context.watch<User?>();
     if (appuser != null) {
-      DatabaseManager().createTeacher(appuser.email!, appuser.uid);
-      return const TeacherHomePage();
+      
+      return  TeacherInfo(email: appuser.email!, uID: appuser.uid,);
     } else {
       return const SignInPage();
     }
