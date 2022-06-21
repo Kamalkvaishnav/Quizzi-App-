@@ -6,7 +6,7 @@ import 'package:quizzapp/ScreenUI/TeacherUI/teacherHomepage.dart';
 import 'package:quizzapp/ScreenUI/TeacherUI/teacherInfo.dart';
 
 import 'Authantication/authantication_service.dart';
-import 'DataBase/databadeManager.dart';
+import 'DataBase/databaseManager.dart';
 import 'ScreenUI/LoginUI/signIn.dart';
 
 void main() async{

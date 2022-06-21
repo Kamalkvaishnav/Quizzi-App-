@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizzapp/ScreenUI/TeacherUI/teacherHomepage.dart';
-
-import '../../DataBase/databadeManager.dart';
+import '../../DataBase/databaseManager.dart';
 
 class TeacherInfo extends StatefulWidget {
   String email;
@@ -26,7 +25,7 @@ class _TeacherInfoState extends State<TeacherInfo> {
           child: Container(
             height: MediaQuery.of(context).size.height * 0.6,
             decoration: BoxDecoration(
-                color: Color.fromARGB(
+                color: const Color.fromARGB(
                   255,
                   137,
                   0,
@@ -40,7 +39,7 @@ class _TeacherInfoState extends State<TeacherInfo> {
               ),
               Text(
                 "Welcome, ${widget.email}",
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 32.0,
                     color: Color.fromARGB(255, 254, 187, 86),
                     fontWeight: FontWeight.bold),
@@ -53,7 +52,6 @@ class _TeacherInfoState extends State<TeacherInfo> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextField(
                   controller: subjectController,
-                  obscureText: true,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Subject',
@@ -68,7 +66,6 @@ class _TeacherInfoState extends State<TeacherInfo> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextField(
                   controller: numberController,
-                  obscureText: true,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Phone No.',
@@ -79,16 +76,17 @@ class _TeacherInfoState extends State<TeacherInfo> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     DatabaseManager().createTeacher(
                         widget.email,
                         widget.uID,
                         numberController.text.trim(),
                         subjectController.text.trim());
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const TeacherHomePage()));
+                            builder: (context) =>
+                                TeacherHomePage(teacherEmail: widget.email)));
                   },
                   child: const Text('Save'))
             ]),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quizzapp/Authantication/authantication_service.dart';
 import 'package:provider/provider.dart';
+import 'package:quizzapp/DataBase/databaseManager.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -19,7 +20,14 @@ class _SignInPageState extends State<SignInPage> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
-          children: <Widget>[SizedBox(height: 30,) ,Text('Login', style: TextStyle(fontSize: 26.0),),
+          children: <Widget>[
+            SizedBox(
+              height: 30,
+            ),
+            Text(
+              'Login',
+              style: TextStyle(fontSize: 26.0),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(
@@ -29,7 +37,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: Image.asset('assets/speedlabsLogo.png')),
               ),
 
-              // 
+              //
             ),
             const SizedBox(
               height: 10,
@@ -72,6 +80,7 @@ class _SignInPageState extends State<SignInPage> {
                   context.read<AuthService>().signIn(
                       email: emailController.text.trim(),
                       password: passwordController.text.trim());
+
                 },
                 child: const Text(
                   'Login',
