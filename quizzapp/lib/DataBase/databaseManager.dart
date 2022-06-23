@@ -100,6 +100,22 @@ class DatabaseManager {
     }
   }
 
+  Future getQuizList() async {
+    List<dynamic> quizList = [];
+    try {
+      await quizzes.get().then((value) {
+        print(value.docs);
+        value.docs.forEach((element) {
+          
+          quizList.add(element.data());
+        });
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+    return quizList;
+  }
+
   Future<List<dynamic>> getMathsQuestionList() async {
     List<dynamic> mathsquestions = [];
     await maths.get().then((value) {

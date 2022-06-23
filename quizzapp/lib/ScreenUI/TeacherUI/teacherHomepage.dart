@@ -30,43 +30,51 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Teacher Portal'),
-              ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.blueGrey)),
-                  onPressed: (() {
-                    context.read<AuthService>().signOut();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignInPage()));
-                  }),
-                  child: const Text('Log out'))
-            ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Teacher Portal'),
+                ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.blueGrey)),
+                    onPressed: (() {
+                      context.read<AuthService>().signOut();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignInPage()));
+                    }),
+                    child: const Text('Log out'))
+              ],
+            ),
+            centerTitle: true,
+            bottom: TabBar(
+              tabs: [Tab(text: "Old", icon: Icon(Icons.time_to_leave),),Tab(text: "New", icon: Icon(Icons.add),), ],
+              
+            ),
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.label),
-              label: 'Old',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add),
-              label: 'New',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
-        body: Center(
-          child: quizpages.elementAt(_selectedIndex),
-        ));
+          // bottomNavigationBar: BottomNavigationBar(
+          //   items: const <BottomNavigationBarItem>[
+          //     BottomNavigationBarItem(
+          //       icon: Icon(Icons.label),
+          //       label: 'Old',
+          //     ),
+          //     BottomNavigationBarItem(
+          //       icon: Icon(Icons.add),
+          //       label: 'New',
+          //     ),
+          //   ],
+          //   currentIndex: _selectedIndex,
+          //   onTap: _onItemTapped,
+          // ),
+          body: TabBarView(
+            children: [OldQuizzes(), NewQuizzes()],
+          )),
+    );
   }
 }
