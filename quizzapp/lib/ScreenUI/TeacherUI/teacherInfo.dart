@@ -77,6 +77,8 @@ class _TeacherInfoState extends State<TeacherInfo> {
               ),
               ElevatedButton(
                   onPressed: () async {
+                    DatabaseManager()
+                        .addBatch('kartik@gmail.com', "JEE Mains");
                     DatabaseManager().createTeacher(
                         widget.email,
                         widget.uID,

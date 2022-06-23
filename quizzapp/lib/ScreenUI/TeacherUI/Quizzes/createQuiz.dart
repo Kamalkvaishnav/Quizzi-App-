@@ -15,6 +15,7 @@ class _CreateQuizState extends State<CreateQuiz> {
   List<dynamic> questionList = [];
   List<dynamic> selectedquestion = [];
   TextEditingController quizNameController = TextEditingController();
+  DateTime dateTime = DateTime(2022, 6, 22, 12, 0);
 
   void _itemChange(dynamic itemValue, bool isSelected) {
     setState(() {
@@ -31,15 +32,33 @@ class _CreateQuizState extends State<CreateQuiz> {
   }
 
   _submit() {
+    DatabaseManager().createQuiz(quizNameController.text.trim(), widget.subject,
+        widget.teacherEmail, selectedquestion, dateTime);
     print("Quizz Created !!");
-    print(selectedquestion);
-    DatabaseManager().createQuiz(
-        quizNameController.text.trim(), widget.subject, widget.teacherEmail, selectedquestion);
+  }
+
+  Future pickDateTime() async {
+    DateTime? date = await showDatePicker(
+        context: context,
+        initialDate: dateTime,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100));
+    if (date == null) return;
+
+    TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: dateTime.hour, minute: dateTime.minute));
+    if (time == null) return;
+
+    final dateTIME =
+        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    setState(() {
+      dateTime = dateTIME;
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchQuestionList(widget.subject);
   }
@@ -63,45 +82,78 @@ class _CreateQuizState extends State<CreateQuiz> {
         questionList = results;
       });
     }
-    print('This is question list ===>>' + questionList.toString());
     return questionList;
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Container(
-          child: Column(
-        children: [
-          Text('Create New Quizz of ${widget.subject}'),
-          TextField(
-            controller: quizNameController,
-            decoration: const InputDecoration(hintText: 'Quizz Name'),
-          )
-        ],
-      )),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: questionList
-              .map((question) => CheckboxListTile(
-                    value: selectedquestion.contains(question),
-                    title: Text(question['Question']),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    onChanged: (isChecked) => _itemChange(question, isChecked!),
-                  ))
-              .toList(),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Create Quizz')),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: 40,
+              child: TextField(
+                style: const TextStyle(height: 2.0),
+                controller: quizNameController,
+                decoration: const InputDecoration(
+                    hintText: 'Quizz Name', border: OutlineInputBorder()),
+              ),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: 60,
+              child: Row(
+                children: [
+                  Text('${dateTime.year} / ${dateTime.month} / ${dateTime.day}',
+                      style: TextStyle(backgroundColor: Colors.blue)),
+                  SizedBox(width: 10),
+                  Text(
+                    '${dateTime.hour} : ${dateTime.minute}',
+                    style: TextStyle(backgroundColor: Colors.blue),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                      onPressed: () async {
+                        pickDateTime();
+                       
+                      },
+                      child: Text("Schedule"))
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              child: ListBody(
+                children: questionList
+                    .map((question) => CheckboxListTile(
+                          value: selectedquestion.contains(question),
+                          title: Text(question['Question']),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          onChanged: (isChecked) =>
+                              _itemChange(question, isChecked!),
+                        ))
+                    .toList(),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: _cancel,
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _submit,
+                  child: const Text('Submit'),
+                ),
+              ],
+            )
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: _cancel,
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _submit,
-          child: const Text('Submit'),
-        ),
-      ],
     );
   }
 }

@@ -23,16 +23,18 @@ class _SelectSubjectState extends State<SelectSubject> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CreateQuiz(subject: dropdownvalue ,teacherEmail: widget.teacherEmail)));
+            builder: (context) => CreateQuiz(subject: dropdownvalue, teacherEmail: widget.teacherEmail)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Subject')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text('Choose the subject..', style: TextStyle(color: Colors.blue, fontSize: 22),),
             DropdownButton(
                   // Initial Value
                   value: dropdownvalue,
@@ -51,7 +53,9 @@ class _SelectSubjectState extends State<SelectSubject> {
                   // change button value to selected value
                   onChanged: (String? newValue) {
                    
-                      dropdownvalue = newValue!;
+                      setState(() {
+                        dropdownvalue = newValue!;
+                      });
                 
                   },
             ),
