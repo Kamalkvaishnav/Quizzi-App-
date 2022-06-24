@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quizzapp/DataBase/databaseManager.dart';
+import 'package:quizzapp/ScreenUI/TeacherUI/Quizzes/quizCard.dart';
 
 class OldQuizzes extends StatefulWidget {
   const OldQuizzes({Key? key}) : super(key: key);
@@ -12,12 +14,21 @@ class _OldQuizzesState extends State<OldQuizzes> {
   List<dynamic> oldQuizList = [];
 
   getOldQuizList() async {
-    dynamic results = await DatabaseManager().getQuizList();
-    DateTime datetime = DateTime.now();
+    List results = await DatabaseManager().getQuizList();
     print('This is quizz List');
     print(results);
-    // bool check = datetime.isBefore(results)
-    // if()
+
+    for (int i = 0; i < results.length; i++) {
+      Timestamp quizDateTime = results[i]['QuizzInfo']['QuizzInfo']['Date & Time'];
+      DateTime dateTime = DateTime.now();
+      if ((dateTime.isAfter(quizDateTime.toDate()))) {
+        setState(() {
+          oldQuizList.add(results[i]);
+        });
+      }
+    }
+ 
+    return oldQuizList;
   }
 
   @override
@@ -29,8 +40,29 @@ class _OldQuizzesState extends State<OldQuizzes> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [Text("All the old quizzes are here!!")],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ListView.builder(
+            itemCount: oldQuizList.length,
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 16),
+            itemBuilder: (context, index) {
+              return QuizListCard(
+                  batch: 'IIT - JEE',
+                  dateTime: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                      ['Date & Time'],
+                  questionList: oldQuizList[index]['QuizzQuestions'],
+                  quizName: oldQuizList[index]['QuizName']['QuizName'],
+                  quizSubject: oldQuizList[index]['QuizzInfo']['Subject'],
+                  teacherEmail: oldQuizList[index]['QuizzInfo']
+                      ['TeacherEmail']);
+            },
+          )
+        ],
+      ),
     );
   }
 }

@@ -1,23 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../DataBase/databaseManager.dart';
 
-class ChatList extends StatefulWidget {
+class QuizListCard extends StatefulWidget {
   List<dynamic> questionList;
   String quizName;
   String quizSubject;
   String teacherEmail;
-  DateTime dateTime;
+  Timestamp dateTime;
   String batch;
 
-  ChatList(
+  QuizListCard(
       {required this.batch, required this.dateTime, required this.questionList, required this.quizName, required this.quizSubject, required this.teacherEmail});
 
   @override
-  _ChatListState createState() => _ChatListState();
+  _QuizListCardState createState() => _QuizListCardState();
 }
 
-class _ChatListState extends State<ChatList> {
+class _QuizListCardState extends State<QuizListCard> {
   //for fetching database manager methods
   DatabaseManager databaseManager = new DatabaseManager();
 
@@ -38,7 +39,7 @@ class _ChatListState extends State<ChatList> {
             Expanded(
               child: Row(
                 children: <Widget>[
-                  Text("${widget.dateTime}"),
+                  Text("${widget.dateTime.toDate().day}/${widget.dateTime.toDate().month}"),
                   const SizedBox(
                     width: 16,
                   ),
@@ -62,6 +63,9 @@ class _ChatListState extends State<ChatList> {
                       ),
                     ),
                   ),
+                  SizedBox(width: 30,),
+                  Text("${widget.dateTime.toDate().hour}:${widget.dateTime.toDate().minute}"),
+                  SizedBox(width: 30,),
                   Text(widget.batch)
                 ],
               ),

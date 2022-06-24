@@ -28,9 +28,9 @@ class DatabaseManager {
   Future<void> addBatch(String studentemail, String batchName) async {
     List<dynamic> studentEmailList = [];
 
-    // await batches.doc(batchName).get().then((value) {
-    //   studentEmailList = value['Students'];
-    // });
+    await batches.doc(batchName).get().then((value) {
+      studentEmailList = value['Students'];
+    });
     studentEmailList.add(studentemail);
 
     return await batches
@@ -90,6 +90,7 @@ class DatabaseManager {
           .collection('QuizzQuestions')
           .doc(questionList[i]["Question"])
           .set(questionMap);
+      quizzes.doc(quizName).set({'QuizName': quizName});
       teacherList
           .doc(teacherEmail)
           .collection("Quizzes")
@@ -101,17 +102,47 @@ class DatabaseManager {
   }
 
   Future getQuizList() async {
-    List<dynamic> quizList = [];
-    try {
-      await quizzes.get().then((value) {
-        print(value.docs);
-        value.docs.forEach((element) {
-          
-          quizList.add(element.data());
-        });
+    List<dynamic> quizNameList = [];
+    await quizzes.get().then((value) {
+      value.docs.forEach((element) {
+        quizNameList.add(element.data());
       });
-    } catch (e) {
-      print(e.toString());
+    });
+
+    List<dynamic> quizInfoList = [];
+
+    for (int i = 0; i < quizNameList.length; i++) {
+      await quizzes
+          .doc(quizNameList[i]['QuizName'])
+          .collection('QuizzInfo')
+          .get()
+          .then((value) => value.docs.forEach((element) {
+                quizInfoList.add({
+                  'QuizName': quizNameList[i]['QuizName'],
+                  'QuizzInfo': element.data()
+                });
+              }));
+    }
+    List<dynamic> quizQuestionList = [];
+    for (int i = 0; i < quizNameList.length; i++) {
+      List<dynamic> oneQuizQuestions = [];
+      await quizzes
+          .doc(quizNameList[i]['QuizName'])
+          .collection('QuizzQuestions')
+          .get()
+          .then((value) => value.docs.forEach((element) {
+                oneQuizQuestions.add(element.data());
+              }));
+      quizQuestionList.add(oneQuizQuestions);
+    }
+    print(quizQuestionList);
+    List<dynamic> quizList = [];
+    for (int i = 0; i < quizNameList.length; i++) {
+      quizList.add({
+        'QuizName': quizNameList[i],
+        'QuizzInfo': quizInfoList[i],
+        'QuizzQuestions': quizQuestionList[i]
+      });
     }
     return quizList;
   }
