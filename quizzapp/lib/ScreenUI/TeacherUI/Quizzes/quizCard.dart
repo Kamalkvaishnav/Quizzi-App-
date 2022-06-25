@@ -63,9 +63,9 @@ class _QuizListCardState extends State<QuizListCard> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 30,),
+                  const SizedBox(width: 30,),
                   Text("${widget.dateTime.toDate().hour}:${widget.dateTime.toDate().minute}"),
-                  SizedBox(width: 30,),
+                  const SizedBox(width: 30,),
                   Text(widget.batch)
                 ],
               ),

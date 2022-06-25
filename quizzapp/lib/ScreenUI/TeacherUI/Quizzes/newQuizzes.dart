@@ -15,6 +15,7 @@ class NewQuizzes extends StatefulWidget {
 
 class _NewQuizzesState extends State<NewQuizzes> {
   List<dynamic> newQuizList = [];
+  bool isLoading = true;
 
   getnewQuizList() async {
     List results = await DatabaseManager().getQuizList();
@@ -26,12 +27,15 @@ class _NewQuizzesState extends State<NewQuizzes> {
           results[i]['QuizzInfo']['QuizzInfo']['Date & Time'];
       DateTime dateTime = DateTime.now();
       if ((dateTime.isBefore(quizDateTime.toDate()))) {
-        setState(() {
-          newQuizList.add(results[i]);
-        });
+        if (this.mounted) {
+          // check whether the state object is in tree
+          setState(() {
+            newQuizList.add(results[i]);
+          });
+        }
       }
     }
-
+    isLoading = false; 
     return newQuizList;
   }
 
@@ -44,7 +48,8 @@ class _NewQuizzesState extends State<NewQuizzes> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return 
+   isLoading? CircularProgressIndicator() : SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -55,7 +60,8 @@ class _NewQuizzesState extends State<NewQuizzes> {
             padding: EdgeInsets.only(top: 16),
             itemBuilder: (context, index) {
               return QuizListCard(
-                  batch: 'IIT - JEE',
+                  batch: newQuizList[index]['QuizzInfo']['QuizzInfo']
+                            ['Batch'],
                   dateTime: newQuizList[index]['QuizzInfo']['QuizzInfo']
                       ['Date & Time'],
                   questionList: newQuizList[index]['QuizzQuestions'],

@@ -12,6 +12,7 @@ class OldQuizzes extends StatefulWidget {
 
 class _OldQuizzesState extends State<OldQuizzes> {
   List<dynamic> oldQuizList = [];
+  bool isLoading = true;
 
   getOldQuizList() async {
     List results = await DatabaseManager().getQuizList();
@@ -19,15 +20,20 @@ class _OldQuizzesState extends State<OldQuizzes> {
     print(results);
 
     for (int i = 0; i < results.length; i++) {
-      Timestamp quizDateTime = results[i]['QuizzInfo']['QuizzInfo']['Date & Time'];
+      Timestamp quizDateTime =
+          results[i]['QuizzInfo']['QuizzInfo']['Date & Time'];
       DateTime dateTime = DateTime.now();
       if ((dateTime.isAfter(quizDateTime.toDate()))) {
-        setState(() {
-          oldQuizList.add(results[i]);
-        });
+        if (this.mounted) {
+          // check whether the state object is in tree
+          setState(() {
+            oldQuizList.add(results[i]);
+          });
+        }
+        
       }
     }
- 
+    isLoading = false;
     return oldQuizList;
   }
 
@@ -40,29 +46,32 @@ class _OldQuizzesState extends State<OldQuizzes> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ListView.builder(
-            itemCount: oldQuizList.length,
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            padding: EdgeInsets.only(top: 16),
-            itemBuilder: (context, index) {
-              return QuizListCard(
-                  batch: 'IIT - JEE',
-                  dateTime: oldQuizList[index]['QuizzInfo']['QuizzInfo']
-                      ['Date & Time'],
-                  questionList: oldQuizList[index]['QuizzQuestions'],
-                  quizName: oldQuizList[index]['QuizName']['QuizName'],
-                  quizSubject: oldQuizList[index]['QuizzInfo']['Subject'],
-                  teacherEmail: oldQuizList[index]['QuizzInfo']
-                      ['TeacherEmail']);
-            },
-          )
-        ],
-      ),
-    );
+    return isLoading
+        ? Container(width: 30, height: 40, child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ListView.builder(
+                  itemCount: oldQuizList.length,
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(top: 16),
+                  itemBuilder: (context, index) {
+                    return QuizListCard(
+                        batch: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                            ['Batch'],
+                        dateTime: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                            ['Date & Time'],
+                        questionList: oldQuizList[index]['QuizzQuestions'],
+                        quizName: oldQuizList[index]['QuizName']['QuizName'],
+                        quizSubject: oldQuizList[index]['QuizzInfo']['Subject'],
+                        teacherEmail: oldQuizList[index]['QuizzInfo']
+                            ['TeacherEmail']);
+                  },
+                )
+              ],
+            ),
+          );
   }
 }

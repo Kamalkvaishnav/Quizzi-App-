@@ -53,12 +53,13 @@ class DatabaseManager {
   }
 
   Future<void> createQuiz(String quizName, String subject, String teacherEmail,
-      List<dynamic> questionList, DateTime dateTime) async {
+      List<dynamic> questionList, DateTime dateTime, String batch) async {
     Map<String, dynamic> infoMap = {
       'TeacherEmail': teacherEmail,
       'Subject': subject,
       'QuizName': quizName,
-      'Date & Time': dateTime
+      'Date & Time': dateTime,
+      'Batch' : batch
     };
 
     await quizzes
