@@ -1,7 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:quizzapp/Authantication/authantication_service.dart';
+
 import 'package:provider/provider.dart';
-import 'package:quizzapp/DataBase/databaseManager.dart';
+
+import '../HelperFunction_Teacher/sharedpreference.dart';
+import '../Services/AuthtenticationServices.dart';
+import 'TeacherinfoPage.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -25,7 +30,7 @@ class _SignInPageState extends State<SignInPage> {
               height: 30,
             ),
             Text(
-              'Login',
+              'Teacher Login',
               style: TextStyle(fontSize: 26.0),
             ),
             Padding(
@@ -74,13 +79,26 @@ class _SignInPageState extends State<SignInPage> {
               height: 50,
               width: 250,
               decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                  color: Color.fromARGB(255, 47, 129, 24),
+                  borderRadius: BorderRadius.circular(20)),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   context.read<AuthService>().signIn(
                       email: emailController.text.trim(),
                       password: passwordController.text.trim());
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final User? user = (await _auth.signInWithEmailAndPassword(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim()))
+                      .user;
 
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TeacherInfo(
+                              email: emailController.text.trim(),
+                              uID: user!.uid)));
+                  await sharedpref();
                 },
                 child: const Text(
                   'Login',
@@ -96,5 +114,32 @@ class _SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  Future<void> sharedpref() async {
+    String myEmail = '';
+    String myName = '';
+    String myUid = '';
+    String myPhone = '';
+    final userdata = FirebaseAuth.instance.currentUser;
+    if (userdata != null) {
+      await FirebaseFirestore.instance
+          .collection("Teachers")
+          .doc(userdata.uid)
+          .get()
+          .then((ds) {
+        setState(() {
+          myEmail = ds.data()!['Email'];
+          myName = ds.data()!['name'];
+          myUid = ds.data()!['uID'];
+          myPhone = ds.data()!['number'];
+        });
+        print('this is:' + myName);
+      });
+
+      HelperFunctions.Teacher_saveUserLoggedInSharedPreference(true);
+      HelperFunctions.Teacher_saveUserEmailSharedPreference(myEmail);
+      HelperFunctions.Teacher_saveUserNameSharedPreference(myName);
+    }
   }
 }

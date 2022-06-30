@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quizzapp/ScreenUI/LoginUI/signIn.dart';
-import 'package:quizzapp/ScreenUI/TeacherUI/Quizzes/newQuizzes.dart';
-import 'package:quizzapp/ScreenUI/TeacherUI/Quizzes/oldQuizzes.dart';
 
-import '../../Authantication/authantication_service.dart';
+
+import '../Quizes/newQuizes.dart';
+import '../Quizes/oldQuizes.dart';
+import '../Services/AuthtenticationServices.dart';
+import 'Teacher_SignInPage.dart';
 
 class TeacherHomePage extends StatefulWidget {
   String teacherEmail;
@@ -74,7 +75,8 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
           // ),
           body: TabBarView(
             children: [OldQuizzes(), NewQuizzes()],
-          )),
+          )
+          ),
     );
   }
 }

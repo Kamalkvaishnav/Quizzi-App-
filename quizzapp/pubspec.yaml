@@ -38,6 +38,9 @@ dependencies:
   firebase_auth: ^3.3.18
   provider: ^6.0.3
   cloud_firestore: ^3.1.16
+  group_radio_button: ^1.2.0
+  shared_preferences: ^2.0.15
+  toggle_switch: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:quizzapp/ScreenUI/TeacherUI/teacherHomepage.dart';
-import '../../DataBase/databaseManager.dart';
+
+import '../../StudentorTeacherPage.dart';
+import '../Services/Teacher_DatabaseManager.dart';
+import 'TeacherHomePage.dart';
+
 
 class TeacherInfo extends StatefulWidget {
   String email;
@@ -16,6 +20,7 @@ class TeacherInfo extends StatefulWidget {
 class _TeacherInfoState extends State<TeacherInfo> {
   final TextEditingController subjectController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,26 +28,24 @@ class _TeacherInfoState extends State<TeacherInfo> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.6,
+            height: MediaQuery.of(context).size.height * 0.8,
             decoration: BoxDecoration(
-                color: const Color.fromARGB(
-                  255,
-                  137,
-                  0,
-                  161,
-                ),
+                color: Color.fromARGB(185, 219, 133, 234),
                 borderRadius: BorderRadius.circular(30)),
             padding: EdgeInsets.all(20),
             child: Column(children: [
               const SizedBox(
                 height: 60,
               ),
-              Text(
-                "Welcome, ${widget.email}",
-                style: const TextStyle(
-                    fontSize: 32.0,
-                    color: Color.fromARGB(255, 254, 187, 86),
-                    fontWeight: FontWeight.bold),
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  "Welcome, ${widget.email}",
+                  style: const TextStyle(
+                      fontSize: 32.0,
+                      color: Color.fromARGB(255, 52, 8, 48),
+                      fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(
                 height: 20,
@@ -65,6 +68,20 @@ class _TeacherInfoState extends State<TeacherInfo> {
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Name',
+                      hintText: 'Enter your name '),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextField(
                   controller: numberController,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -77,20 +94,32 @@ class _TeacherInfoState extends State<TeacherInfo> {
               ),
               ElevatedButton(
                   onPressed: () async {
-                    DatabaseManager()
-                        .addBatch('kartik@gmail.com', "JEE Mains");
                     DatabaseManager().createTeacher(
                         widget.email,
+                        nameController.text.trim(),
                         widget.uID,
                         numberController.text.trim(),
                         subjectController.text.trim());
+                    DatabaseManager().createTUser( widget.email, "Teacher");
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
                                 TeacherHomePage(teacherEmail: widget.email)));
                   },
-                  child: const Text('Save'))
+                  child: const Text('Save')),
+
+                  ElevatedButton(
+                  onPressed: () async {
+                    
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Verification()));
+                  },
+                  child: const Text('Go to'))
+
             ]),
           ),
         ),
@@ -98,3 +127,15 @@ class _TeacherInfoState extends State<TeacherInfo> {
     );
   }
 }
+                    
+                    // for (int i = 1; i < 11; i++) {
+                    //   DatabaseManager().createquestion(
+                    //       'Maths',
+                    //       'Question $i',
+                    //       'option1',
+                    //       'option2',
+                    //       'option3',
+                    //       'option4',
+                    //       'answer');
+                    // }
+                    

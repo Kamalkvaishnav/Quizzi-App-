@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quizzapp/DataBase/databaseManager.dart';
-import 'package:quizzapp/ScreenUI/TeacherUI/Quizzes/quizCard.dart';
-import 'package:quizzapp/ScreenUI/TeacherUI/Quizzes/selectSubject.dart';
+import '../Services/Teacher_DatabaseManager.dart';
+import 'quizCard.dart';
+import 'selectSubject.dart';
 
 class NewQuizzes extends StatefulWidget {
   NewQuizzes({Key? key}) : super(key: key);
@@ -15,7 +15,6 @@ class NewQuizzes extends StatefulWidget {
 
 class _NewQuizzesState extends State<NewQuizzes> {
   List<dynamic> newQuizList = [];
-  bool isLoading = true;
 
   getnewQuizList() async {
     List results = await DatabaseManager().getQuizList();
@@ -27,15 +26,14 @@ class _NewQuizzesState extends State<NewQuizzes> {
           results[i]['QuizzInfo']['QuizzInfo']['Date & Time'];
       DateTime dateTime = DateTime.now();
       if ((dateTime.isBefore(quizDateTime.toDate()))) {
-        if (this.mounted) {
-          // check whether the state object is in tree
+        if (mounted) {
           setState(() {
             newQuizList.add(results[i]);
           });
         }
       }
     }
-    isLoading = false; 
+
     return newQuizList;
   }
 
@@ -48,8 +46,7 @@ class _NewQuizzesState extends State<NewQuizzes> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-   isLoading? CircularProgressIndicator() : SingleChildScrollView(
+    return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -60,8 +57,7 @@ class _NewQuizzesState extends State<NewQuizzes> {
             padding: EdgeInsets.only(top: 16),
             itemBuilder: (context, index) {
               return QuizListCard(
-                  batch: newQuizList[index]['QuizzInfo']['QuizzInfo']
-                            ['Batch'],
+                  batch: 'IIT - JEE',
                   dateTime: newQuizList[index]['QuizzInfo']['QuizzInfo']
                       ['Date & Time'],
                   questionList: newQuizList[index]['QuizzQuestions'],

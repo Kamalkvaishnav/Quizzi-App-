@@ -1,29 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; 
-import 'Student Folder/StudentMain.dart';
-import 'StudentorTeacherPage.dart';
-import 'Teacher Folder/Services/AuthtenticationServices.dart';
-import 'Teacher Folder/TeachersMain.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(const MyApp());
-  
-}
+import 'LandingPages/SigninPage.dart';
+import 'LandingPages/StudentInfo.dart';
+import 'Services/AuthServices.dart';
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+
+class StudentMain extends StatefulWidget {
+  StudentMain();
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<StudentMain> createState() => _StudentMainState();
 }
 
-class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+class _StudentMainState extends State<StudentMain> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -56,9 +50,8 @@ class AuthanticationWrapper extends StatefulWidget {
 }
 
 class _AuthanticationWrapperState extends State<AuthanticationWrapper> {
-  dynamic userinfo; 
+  dynamic userinfo;
   Future<dynamic> CheckRole() async {
-   // this function is for finding the role of user. 
     String role = '';
     final userdata = FirebaseAuth.instance.currentUser;
     if (userdata != null) {
@@ -74,7 +67,6 @@ class _AuthanticationWrapperState extends State<AuthanticationWrapper> {
         print('this is:' + role);
       });
     }
-  
 
     return userinfo;
   }
@@ -84,27 +76,19 @@ class _AuthanticationWrapperState extends State<AuthanticationWrapper> {
     CheckRole();
     super.initState();
   }
-//
 
   @override
   Widget build(BuildContext context) {
     final appuser = context.watch<User?>();
-    // if (appuser != null) {
-    //   return Verification();
-    //   // Studentinfo(email: appuser.email!, uID: appuser.uid);
-    // } else {
-    //   return
-    //   Verification();
-    // }
 
     if (appuser != null) {
-      if (userinfo == 'Student') {
-        return StudentMain();
+      if (userinfo == "Student") {
+        return Studentinfo(email: appuser.email!, uID: appuser.uid);
       } else {
-        return TeacherMain();
+        return SignInPage();
       }
     } else {
-      return Verification();
+      return SignInPage();
     }
   }
 }

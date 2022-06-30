@@ -26,17 +26,17 @@ class AuthService {
     }
   }
 
-  // //Sign Up
-  // Future<String> signUp(
-  //     {required String email, required String password}) async {
-  //   try {
-  //     await _firebaseAuth.createUserWithEmailAndPassword(
-  //         email: email, password: password);
+  //Sign Up
+  Future<String> signUp(
+      {required String email, required String password}) async {
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
 
-  //     return "Singed Up";
-  //   } on FirebaseAuthException catch (e) {
-  //     print("error logging out");
-  //     return e.toString();
-  //   }
-  // }
+      return "Singed Up";
+    } on FirebaseAuthException catch (e) {
+      print("error logging out");
+      return e.toString();
+    }
+  }
 }

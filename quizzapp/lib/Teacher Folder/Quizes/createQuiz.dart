@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quizzapp/DataBase/databaseManager.dart';
+
+import '../Services/Teacher_DatabaseManager.dart';
+
+
 
 class CreateQuiz extends StatefulWidget {
   String subject;
@@ -16,8 +19,8 @@ class _CreateQuizState extends State<CreateQuiz> {
   List<dynamic> selectedquestion = [];
   TextEditingController quizNameController = TextEditingController();
   DateTime dateTime = DateTime(2022, 6, 22, 12, 0);
-  var batchName = ['JEE-Mains', 'CBSE 11-12th'];
-  String dropdownvalue = 'JEE-Mains';
+  var batchName = ['IIT-JEE', 'CBSE 11-12th'];
+   String dropdownvalue = 'IIT-JEE';
 
   void _itemChange(dynamic itemValue, bool isSelected) {
     setState(() {
@@ -35,7 +38,7 @@ class _CreateQuizState extends State<CreateQuiz> {
 
   _submit() {
     DatabaseManager().createQuiz(quizNameController.text.trim(), widget.subject,
-        widget.teacherEmail, selectedquestion, dateTime, dropdownvalue);
+        widget.teacherEmail, selectedquestion, dateTime);
     print("Quizz Created !!");
   }
 
@@ -104,7 +107,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                     hintText: 'Quizz Name', border: OutlineInputBorder()),
               ),
             ),
-            DropdownButton(
+             DropdownButton(
               // Initial Value
               value: dropdownvalue,
 
@@ -142,6 +145,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                   ElevatedButton(
                       onPressed: () async {
                         pickDateTime();
+                       
                       },
                       child: Text("Schedule"))
                 ],
@@ -169,7 +173,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: _submit,
+                  onPressed:  _submit,
                   child: const Text('Submit'),
                 ),
               ],

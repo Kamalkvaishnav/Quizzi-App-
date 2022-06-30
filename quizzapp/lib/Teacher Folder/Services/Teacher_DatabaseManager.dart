@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseManager {
+  final CollectionReference userlist =
+      FirebaseFirestore.instance.collection('Users');
   final CollectionReference teacherList =
       FirebaseFirestore.instance.collection('Teachers');
   final CollectionReference maths =
@@ -11,31 +13,38 @@ class DatabaseManager {
       FirebaseFirestore.instance.collection('Chemistry');
   final CollectionReference quizzes =
       FirebaseFirestore.instance.collection('Quizzes');
-  final CollectionReference batches =
-      FirebaseFirestore.instance.collection('Batches');
+ 
 
   Future<void> createTeacher(
-      String email, String uId, String number, String subject) async {
+      String email, String name,String uId, String number, String subject) async {
     Map<String, dynamic> map = {
       'Email': email,
+      'Name':name,
       'uID': uId,
       'Number': number,
-      'Subject': subject
+      'Subject': subject,
+      'role':"Teacher"
     };
     return await teacherList.doc(email).set(map);
   }
 
-  Future<void> addBatch(String studentemail, String batchName) async {
-    List<dynamic> studentEmailList = [];
 
-    await batches.doc(batchName).get().then((value) {
-      studentEmailList = value['Students'];
+
+  Future<dynamic> fetchTeacherinfo(String email) async {
+    final user = await teacherList
+        .where("userEmail", isEqualTo: email)
+        .get()
+        .catchError((e) {
+      print(e.toString());
     });
-    studentEmailList.add(studentemail);
 
-    return await batches
-        .doc(batchName)
-        .set({'Batch Name': batchName, 'Students': studentEmailList});
+    return user;
+  }
+ 
+
+  Future<void> createTUser(String email, String role) async{
+    Map<String, dynamic> map = {'Email': email, 'role': role};
+    return await userlist.doc(email).set(map);
   }
 
   Future<void> createquestion(String subject, String question, String option1,
@@ -53,13 +62,12 @@ class DatabaseManager {
   }
 
   Future<void> createQuiz(String quizName, String subject, String teacherEmail,
-      List<dynamic> questionList, DateTime dateTime, String batch) async {
+      List<dynamic> questionList, DateTime dateTime) async {
     Map<String, dynamic> infoMap = {
       'TeacherEmail': teacherEmail,
       'Subject': subject,
       'QuizName': quizName,
-      'Date & Time': dateTime,
-      'Batch' : batch
+      'Date & Time': dateTime
     };
 
     await quizzes
