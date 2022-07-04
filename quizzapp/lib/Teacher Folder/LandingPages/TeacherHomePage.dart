@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
+import '../../StudentorTeacherPage.dart';
 import '../Quizes/newQuizes.dart';
 import '../Quizes/oldQuizes.dart';
 import '../Services/AuthtenticationServices.dart';
@@ -48,7 +49,7 @@ class _TeacherHomePageState extends State<TeacherHomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignInPage()));
+                              builder: (context) => const Verification()));
                     }),
                     child: const Text('Log out'))
               ],

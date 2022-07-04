@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:quizzapp/Student%20Folder/QuizFiles/OldQuizForStudents.dart';
 
+import '../../StudentorTeacherPage.dart';
 import '../QuizFiles/NewQuizForStudents.dart';
 import '../Services/AuthServices.dart';
 import 'SigninPage.dart';
@@ -49,7 +50,7 @@ class _StudentDashBoardState extends State<StudentDashBoard> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignInPage()));
+                              builder: (context) => const Verification()));
                     }),
                     child: const Text('Log out'))
               ],

@@ -16,23 +16,25 @@ class NewQuizesForStudents extends StatefulWidget {
 
 class _NewQuizesForStudentsState extends State<NewQuizesForStudents> {
   List<dynamic> newQuizList = [];
+  bool isLoading = false;
 
   getnewQuizList() async {
     List results = await DatabaseManager().getQuizList();
     print('This is quizz List');
-    print(results);
+    // print(results);
 
     for (int i = 0; i < results.length; i++) {
       Timestamp quizDateTime =
           results[i]['QuizzInfo']['QuizzInfo']['Date & Time'];
       DateTime dateTime = DateTime.now();
       if ((dateTime.isBefore(quizDateTime.toDate()))) {
-        if (mounted) {
-          setState(() {
-            newQuizList.add(results[i]);
-          });
-        }
+        newQuizList.add(results[i]);
       }
+    }
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
     }
 
     return newQuizList;
@@ -47,7 +49,7 @@ class _NewQuizesForStudentsState extends State<NewQuizesForStudents> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return !isLoading? CircularProgressIndicator() :SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -58,12 +60,13 @@ class _NewQuizesForStudentsState extends State<NewQuizesForStudents> {
             padding: EdgeInsets.only(top: 16),
             itemBuilder: (context, index) {
               return QuizcardStudentSide(
-                batch: 'IIT - JEE',
+                batch: newQuizList[index]['QuizzInfo']['QuizzInfo']
+                          ['Batch'],
                 dateTime: newQuizList[index]['QuizzInfo']['QuizzInfo']
                     ['Date & Time'],
                 questionList: newQuizList[index]['QuizzQuestions'],
                 quizName: newQuizList[index]['QuizName']['QuizName'],
-                quizSubject: newQuizList[index]['QuizzInfo']['Subject'],
+                quizSubject: newQuizList[index]['QuizzInfo']['QuizzInfo']['Subject'],
               );
             },
           ),

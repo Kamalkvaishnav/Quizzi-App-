@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'Student Folder/StudentMain.dart';
 import 'Teacher Folder/TeachersMain.dart';
-
-
-
-
-
 
 class Verification extends StatefulWidget {
   const Verification({Key? key}) : super(key: key);
@@ -35,7 +28,7 @@ class _VerificationState extends State<Verification> {
                   const SizedBox(
                     height: 60,
                   ),
-                  Center(
+                  const Center(
                     child: Text(
                       "Welcome to QuizApp",
                       textAlign: TextAlign.center,
@@ -62,15 +55,13 @@ class _VerificationState extends State<Verification> {
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: Container(
-                         alignment: Alignment.center,
+                        alignment: Alignment.center,
                         child: ElevatedButton(
-                         
                           onPressed: (() {
                             Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                         StudentMain()));
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => StudentMain()));
                           }),
                           child: Text("Student"),
                         ),
@@ -88,8 +79,7 @@ class _VerificationState extends State<Verification> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        TeacherMain()));
+                                    builder: (context) => TeacherMain()));
                           }),
                           child: Text("Teacher"),
                         )),

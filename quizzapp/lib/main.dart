@@ -87,7 +87,7 @@ class _AuthanticationWrapperState extends State<AuthanticationWrapper> {
 //
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     final appuser = context.watch<User?>();
     // if (appuser != null) {
     //   return Verification();
@@ -99,12 +99,12 @@ class _AuthanticationWrapperState extends State<AuthanticationWrapper> {
 
     if (appuser != null) {
       if (userinfo == 'Student') {
-        return StudentMain();
+        return  StudentMain();
       } else {
         return TeacherMain();
       }
     } else {
-      return Verification();
+      return const Verification();
     }
   }
 }

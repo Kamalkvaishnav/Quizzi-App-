@@ -98,7 +98,7 @@ class _SignInPageState extends State<SignInPage> {
                           builder: (context) => TeacherInfo(
                               email: emailController.text.trim(),
                               uID: user!.uid)));
-                  await sharedpref();
+                  // await sharedpref();
                 },
                 child: const Text(
                   'Login',
@@ -137,9 +137,9 @@ class _SignInPageState extends State<SignInPage> {
         print('this is:' + myName);
       });
 
-      HelperFunctions.Teacher_saveUserLoggedInSharedPreference(true);
-      HelperFunctions.Teacher_saveUserEmailSharedPreference(myEmail);
-      HelperFunctions.Teacher_saveUserNameSharedPreference(myName);
+      // HelperFunctions.Teacher_saveUserLoggedInSharedPreference(true);
+      // HelperFunctions.Teacher_saveUserEmailSharedPreference(myEmail);
+      // HelperFunctions.Teacher_saveUserNameSharedPreference(myName);
     }
   }
 }

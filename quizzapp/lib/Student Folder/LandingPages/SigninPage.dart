@@ -97,7 +97,7 @@ class _SignInPageState extends State<SignInPage> {
                       .user;
                   print("---> User signed in");
                   // ignore: use_build_context_synchronously
-                  sharedpref();
+                  // sharedpref();
 
                   Navigator.push(
                       context,

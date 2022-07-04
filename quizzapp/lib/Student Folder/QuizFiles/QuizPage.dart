@@ -1,16 +1,23 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:group_radio_button/group_radio_button.dart';
+import 'package:quizzapp/Student%20Folder/QuizFiles/progress_Controller.dart';
 
+import '../Services/Databasemanager.dart';
 
 class Quizpage extends StatefulWidget {
   List<dynamic> ourquestionList;
   String ourquizName;
-  String? ourquizSubject;
+  String ourquizSubject;
   Timestamp ourdateTime;
-  String? ourbatch;
+  String ourbatch;
   Quizpage({
     required this.ourquestionList,
     required this.ourquizName,
@@ -39,7 +46,8 @@ class _QuizpageState extends State<Quizpage> {
   }
 
   final PageController _pageController = PageController();
-  int selectedval = 1;
+  String? _value;
+  late Timer _timerForInter;
   @override
   void dispose() {
     _pageController.dispose();
@@ -47,357 +55,297 @@ class _QuizpageState extends State<Quizpage> {
   }
 
   @override
+  void initState() {
+    _value = " ";
+    _timerForInter = Timer.periodic(Duration(seconds: 300), (result) {
+        
+        });
+    super.initState();
+  }
+
+  int count = 0;
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 10,
         title: Text(widget.ourquizName),
       ),
       body: Container(
         child: PageView.builder(
+            physics: NeverScrollableScrollPhysics(),
             pageSnapping: true,
             controller: _pageController,
             itemCount: widget.ourquestionList.length,
             itemBuilder: (context, index) {
               final question = widget.ourquestionList[index];
 
-              return buildQuestion(question: question, index: index);
-              // QuizQuestionCard(
-              //     quizname: widget.ourquizName.toString(),
-              //     question:
-              //         widget.ourquestionList[index]['Question'].toString(),
-              //     option1:
-              //         widget.ourquestionList[index]['Option 1'].toString(),
-              //     option2:
-              //         widget.ourquestionList[index]['Option 2'].toString(),
-              //     option3:
-              //         widget.ourquestionList[index]['Option 3'].toString(),
-              //     option4:
-              //         widget.ourquestionList[index]['Option 4'].toString(),
-              //     index: index,
-              //     controller: _pageController);
+              return Container(
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                  colors: [Color.fromARGB(255, 117, 193, 159), Colors.blueGrey],
+                )),
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 20),
+                child: Column(children: <Widget>[
+                  // Container(
+                  //     child: LinearProgressIndicator(
+                  //         backgroundColor:
+                  //             const Color.fromARGB(255, 108, 153, 175),
+                  //         valueColor: const AlwaysStoppedAnimation(
+                  //             Color.fromARGB(255, 36, 36, 91)),
+                  //         minHeight: 20,
+                  //         value: initial)),
+                  Container(
+                    width: double.infinity,
+                    height: 35,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFF3F4768), width: 3),
+                        borderRadius: BorderRadius.circular(50)),
+                    child: GetBuilder<TimerController>(
+                        init: TimerController(),
+                        builder: (controller) {
+                          return Stack(
+                            children: [
+                              LayoutBuilder(
+                                  builder: (context, constraints) => Container(
+                                        width: constraints.maxWidth *
+                                            controller.animation.value,
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [
+                                              Colors.cyan,
+                                              Colors.indigo,
+                                            ],
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                      )),
+                              Positioned.fill(
+                                  child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                        '${(controller.animation.value * 60).round()} Sec'),
+                                    Text('X')
+                                  ],
+                                ),
+                              ))
+                            ],
+                          );
+                        }),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                    child: Center(
+                      child: Container(
+                        // padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                        height: 100,
+                        width:
+                            WidgetsBinding.instance.window.physicalSize.width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.blue[100],
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Q ${index + 1}." + question['Question'],
+                          style: TextStyle(fontSize: 15.0),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  //options
+                  for (int i = 1; i <= 4; i++)
+                    Container(
+                      height: 70,
+                      padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Color.fromARGB(255, 254, 206, 244),
+                        ),
+                        child: Card(
+
+                            // margin: EdgeInsets.all(5),
+                            child: ListTile(
+                          contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          tileColor: Color.fromARGB(255, 254, 206, 244),
+                          title: Text(
+                            question['Option $i'],
+                          ),
+                          leading: Radio<String>(
+                            value: question['Option $i'],
+                            groupValue: _value,
+                            onChanged: (value) {
+                              setState(() {
+                                _value = value;
+
+                                print("Selected value: " + value!);
+                              });
+                            },
+                          ),
+                        )),
+                      ),
+                    ),
+
+                  Container(
+                      child: Column(children: [
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: const Color.fromARGB(235, 35, 139, 208),
+                          onPrimary: const Color.fromARGB(255, 9, 11, 73),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_value == question['Answer']) {
+                            setState(() {
+                              count = count + 1;
+                            });
+                            print("This is count:" + count.toString());
+                          }
+
+                          // if (index == widget.ourquestionList.length - 1) {
+                          //   Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //           builder: (context) =>
+                          //               ResultPage(count: count)));
+
+                          //   print("This is count:" + count.toString());
+                          // }
+
+                          // update();
+                          // setState(() {
+                          //   initial = 0.0;
+                          // });
+                        },
+                        child: const Text(
+                          'Lock',
+                          style: TextStyle(color: Colors.white),
+                        )),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //PREV BUTTON
+                        Container(
+                          alignment: Alignment.center,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.red,
+                                onPrimary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(32.0),
+                                ),
+                              ),
+                              onPressed: () {
+                                _pageController.previousPage(
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeIn);
+                              },
+                              child: const Text('Prev')),
+                        ),
+
+                        //NEXT BUTTON
+                        const SizedBox(width: 20),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.red,
+                              onPrimary: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(32.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              nextPage(index);
+                            },
+                            child: const Text('Next'))
+                      ],
+                    ),
+                  ])),
+                ]),
+              );
             }),
-        // child: ListView.builder(
-        //     shrinkWrap: true,
-        //     itemCount: widget.ourquestionList.length,
-        //     itemBuilder: ((context, index) {
-
-        //       return SingleChildScrollView(
-        //         child:Container(
-        //         alignment: Alignment.center,
-        //         child: QuizQuestionCard(
-        //           quizname: widget.ourquizName.toString(),
-        //           question:
-        //               widget.ourquestionList[index]['Question'].toString(),
-        //           option1: widget.ourquestionList[index]['Option 1'].toString(),
-        //           option2: widget.ourquestionList[index]['Option 2'].toString(),
-        //           option3: widget.ourquestionList[index]['Option 3'].toString(),
-        //           option4: widget.ourquestionList[index]['Option 4'].toString(),
-        //         ),
-        //       )
-        //       );
-
-        //     })),
       ),
     );
   }
 
-  Widget buildQuestion({
-    @required dynamic question,
-    @required int? index,
-  }) {
-    // int value=1;
-    // int selectedval = 1;
+  nextPage(dynamic index) {
+    _pageController.nextPage(
+        duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
 
-    // Future<dynamic> Method(List<String> values) async {
-    //   setState(() {
-    //     values.add(question['Option 1']);
-    //   values.add(question['Option 2']);
-    //   values.add(question['Option 3']);
-    //   values.add(question['Option 4']);
-    //   });
-    // }
+    if (index == widget.ourquestionList.length - 1) {
+      _showdialog(count);
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (context) => ResultPage(
+      //             Quizname: widget.ourquizName,
+      //             count: count)));
 
-    List<String> values = [];
-    String selectedval = '';
-    @override
-    void initState() {
-      print("Hi this is the question");
-      super.initState();
+      final userdata = FirebaseAuth.instance.currentUser!;
+      DatabaseManager().quizmarks(widget.ourquizName, count, userdata.uid, userdata.email! );
+      print("This is quiz marks" +
+          DatabaseManager().fetchquizmarks(widget.ourquizName).toString());
+      print("This is count:" + count.toString());
     }
+  }
 
-    int value = 1;
-    return Container(
-        padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
-        child: Column(children: [
-          Container(
-            padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                height: 140,
-                width: WidgetsBinding.instance.window.physicalSize.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.blue[100],
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  question['Question'],
-                  style: TextStyle(fontSize: 15.0),
-                ),
-              ),
-            ),
-          ),
+  // QuizQuestionCard(
+  //     quizname: widget.ourquizName.toString(),
+  //     question:
+  //         widget.ourquestionList[index]['Question'].toString(),
+  //     option1:
+  //         widget.ourquestionList[index]['Option 1'].toString(),
+  //     option2:
+  //         widget.ourquestionList[index]['Option 2'].toString(),
+  //     option3:
+  //         widget.ourquestionList[index]['Option 3'].toString(),
+  //     option4:
+  //         widget.ourquestionList[index]['Option 4'].toString(),
+  //     index: index,
+  //     controller: _pageController);
 
-          // Container(
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(30),
-          //   ),
-          //   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-          //   child: Column(
-          //     children: values.map((value) {
-          //       return Container(
-          //         height: 60,
-          //         decoration: BoxDecoration(
-          //           borderRadius: BorderRadius.circular(30),
-          //         ),
-          //         child: RadioListTile<String>(
-          //             tileColor: Colors.green[200],
-          //             value: value,
-          //             title: Text("New"),
-          //             groupValue: selectedval,
-          //             onChanged: (value) {
-          //               setState(() {
-          //                 selectedval = value.toString();
-          //               });
-          //             }),
-          //       );
-          //     }).toList(),
-          //   ),
-          // ),
+  // Widget timerwidget() {
+  //   double intial = 0;
+  //   update(intial);
 
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RadioListTile(
-                title: Text(question['Option 1']),
-                value: 1,
-                groupValue: selectedval,
-                activeColor: Colors.green,
-                onChanged: (val) {
-                  setState(() {
-                    selectedval = val.toString();
-                    print("This is selected:" + value.toString());
-                  });
+  //   // setState(() {
+  //   //   initial = 0.0;
+  //   // });
+  //   return
+  //   LinearProgressIndicator(
+  //       backgroundColor: const Color.fromARGB(255, 108, 153, 175),
+  //       valueColor:
+  //           const AlwaysStoppedAnimation(Color.fromARGB(255, 36, 36, 91)),
+  //       minHeight: 20,
+  //       value: initial);
+  // }
+  void _showdialog(int count) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            // insetAnimationCurve: ,
+            title: Text(
+                'Your current marks is $count/${widget.ourquestionList.length}'),
+            content: Text('Click for more info'),
+            actions: [
+              MaterialButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
                 },
-              ),
-              SizedBox(height: 10),
-              RadioListTile(
-                title: Text(question['Option 2']),
-                value: 2,
-                groupValue: selectedval,
-                activeColor: Colors.green,
-                onChanged: (value) {
-                  setState(() {
-                    selectedval = value.toString();
-                    print("This is selected:" + value.toString());
-                  });
-                },
-              ),
-              SizedBox(height: 10),
-              RadioListTile(
-                title: Text(question['Option 3']),
-                value: 3,
-                groupValue: selectedval,
-                activeColor: Colors.green,
-                onChanged: (value) {
-                  setState(() {
-                    selectedval = value.toString();
-                    print("This is selected:" + value.toString());
-                  });
-                },
-              ),
-              SizedBox(height: 10),
-              RadioListTile(
-                title: Text(question['Option 4']),
-                value: 4,
-                groupValue: selectedval,
-                activeColor: Colors.green,
-                onChanged: (value) {
-                  setState(() {
-                    selectedval = value.toString();
-                    print("This is selected:" + value.toString());
-                  });
-                },
-              ),
+                child: Text('Back'),
+              )
             ],
-          ),
-
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromARGB(235, 35, 139, 208),
-                onPrimary: Color.fromARGB(255, 9, 11, 73),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.0),
-                ),
-              ),
-              onPressed: () {},
-              child: Text(
-                'submit',
-                style: TextStyle(color: Colors.white),
-              )),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                      onPrimary: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      // _pageController.animateToPage(
-                      //   index! - 1,
-                      //   duration: const Duration(milliseconds: 500),
-                      //   curve: Curves.easeInOut,
-                      // );
-                      // index = index !- 1;
-
-                      _pageController.previousPage(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeIn);
-                    },
-                    child: Text('Prev')),
-              ),
-              SizedBox(width: 20),
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
-                    onPrimary: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32.0),
-                    ),
-                  ),
-                  onPressed: () {
-                    _pageController.nextPage(
-                        duration: Duration(milliseconds: 500),
-                        curve: Curves.easeIn);
-                  },
-                  child: Text('Next'))
-            ],
-          ),
-        ]));
+          );
+        });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- // return Container(
-              //     padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
-              //     child: Column(children: [
-              //       Container(
-              //         padding: EdgeInsets.fromLTRB(10, 20, 10, 20),
-              //         child: Center(
-              //           child: Container(
-              //             padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
-              //             height: 140,
-              //             width:
-              //                 WidgetsBinding.instance.window.physicalSize.width,
-              //             decoration: BoxDecoration(
-              //               borderRadius: BorderRadius.circular(10),
-              //               color: Colors.blue[100],
-              //             ),
-              //             alignment: Alignment.center,
-              //             child: Text(
-              //               widget.ourquestionList[index]['Question'],
-              //               style: TextStyle(fontSize: 15.0),
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-
-              //         Container(
-              //           child: Column(
-              //             children: [
-              //               ListTile(
-              //                 title: Text(widget.ourquestionList[index]['Option 1']),
-              //                 leading: Radio<int>(
-              //                     value: 1,
-              //                     groupValue: selectedval,
-              //                     onChanged: (value) {
-              //                       setState(() {
-              //                         selectedval = value!;
-              //                       });
-              //                     }),
-              //               ),
-
-              //       ListTile(
-              //               title: Text(widget.ourquestionList[index]['Option 2']),
-              //               leading: Radio<int>(
-              //                   value: 2,
-              //                   groupValue: selectedval,
-              //                   onChanged: (value) {
-              //                     setState(() {
-              //                       selectedval = value!;
-              //                     });
-              //                   }),
-              //       ),
-              //       ListTile(
-              //               title: Text(widget.ourquestionList[index]['Option 3']),
-              //               leading: Radio<int>(
-              //                   value: 3,
-              //                   groupValue: selectedval,
-              //                   onChanged: (value) {
-              //                     setState(() {
-              //                       selectedval = value!;
-              //                     });
-              //                   }),
-              //       ),
-              //       ListTile(
-              //               title: Text(widget.ourquestionList[index]['Option 4']),
-              //               leading: Radio<int>(
-              //                   value: 4,
-              //                   groupValue: selectedval,
-              //                   onChanged: (value) {
-              //                     setState(() {
-              //                       selectedval = value!;
-              //                     });
-              //                   }),
-              //       ),
-              //             ],
-              //           ),
-              //         ),
-
-              //   ElevatedButton(
-              //       onPressed: () {
-              //         // if (selectedval == correctans) {
-              //         //   CircularProgressIndicator();
-              //         //   Navigator.push(
-              //         //       context,
-              //         //       MaterialPageRoute(
-              //         //           builder: (context) => ));
-              //         // }
-              //       },
-              //       child: Text('submit')),
-              //   ElevatedButton(onPressed: () {}, child: Text('Next')),
-              // ]
-              // )
-              // );

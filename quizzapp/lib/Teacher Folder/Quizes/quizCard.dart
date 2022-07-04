@@ -7,11 +7,11 @@ import '../Services/Teacher_DatabaseManager.dart';
 
 class QuizListCard extends StatefulWidget {
   List<dynamic> questionList;
-  String? quizName;
-  String? quizSubject;
-  String? teacherEmail;
+  String quizName;
+  String quizSubject;
+  String teacherEmail;
   Timestamp dateTime;
-  String? batch;
+  String batch;
 
   QuizListCard(
       {required this.batch, required this.dateTime, required this.questionList, required this.quizName, required this.quizSubject, required this.teacherEmail});
@@ -52,7 +52,7 @@ class _QuizListCardState extends State<QuizListCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            widget.quizName!,
+                            widget.quizName,
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey.shade600,
@@ -68,7 +68,7 @@ class _QuizListCardState extends State<QuizListCard> {
                   SizedBox(width: 30,),
                   Text("${widget.dateTime.toDate().hour}:${widget.dateTime.toDate().minute}"),
                   SizedBox(width: 30,),
-                  Text(widget.batch!)
+                  Text(widget.batch)
                 ],
               ),
             ),

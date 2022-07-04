@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quizzapp/Student%20Folder/QuizFiles/OldQuizForStudents.dart';
 
 import '../Services/Teacher_DatabaseManager.dart';
 
@@ -38,8 +39,11 @@ class _CreateQuizState extends State<CreateQuiz> {
 
   _submit() {
     DatabaseManager().createQuiz(quizNameController.text.trim(), widget.subject,
-        widget.teacherEmail, selectedquestion, dateTime);
+        widget.teacherEmail, selectedquestion, dateTime, dropdownvalue);
     print("Quizz Created !!");
+    Navigator.pop(context);
+    Navigator.pop(context);
+    
   }
 
   Future pickDateTime() async {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseManager {
   final CollectionReference userlist =
@@ -14,10 +15,17 @@ class DatabaseManager {
     List<dynamic> studentEmailList = [];
 
     await batch.doc(batchName).get().then((value) {
-      studentEmailList = value['Students'];
+      if (value.exists) {
+        studentEmailList = value['Students'];
+      } else {
+        studentEmailList = [];
+      }
     });
 
-    studentEmailList.add(studentemail);
+    if (studentEmailList.contains(studentemail) == false) {
+      studentEmailList.add(studentemail);
+    }
+
     return await batch
         .doc(batchName)
         .set({'Batch Name': batchName, 'Students': studentEmailList});
@@ -41,10 +49,8 @@ class DatabaseManager {
   }
 
   Future<dynamic> getUserRole(String email) async {
-    dynamic results = await userlist
-        .where("Email", isEqualTo: email)
-        .get()
-        .catchError((e) {
+    dynamic results =
+        await userlist.where("Email", isEqualTo: email).get().catchError((e) {
       print(e.toString());
     });
 
@@ -97,7 +103,7 @@ class DatabaseManager {
               }));
       quizQuestionList.add(oneQuizQuestions);
     }
-    print(quizQuestionList);
+    // print(quizQuestionList);
     List<dynamic> quizList = [];
     for (int i = 0; i < quizNameList.length; i++) {
       quizList.add({
@@ -107,5 +113,38 @@ class DatabaseManager {
       });
     }
     return quizList;
+  }
+
+  //FOR QUIZ MARKS
+  Future<void> quizmarks(String quizname, int count, String uid, String email) async {
+    Map<String, dynamic> map = {'marks': count, 'quizname': quizname, 'StudentEmail': email};
+    await studentList
+        .doc(uid)
+        .collection('AttemptedQuizes')
+        .doc(quizname)
+        .set(map);
+  }
+
+  Future<int> fetchquizmarks(String quizname) async {
+    final userdata = FirebaseAuth.instance.currentUser;
+    String uid = userdata!.uid;
+
+    int mymarks = -1;
+    await studentList
+        .doc(uid)
+        .collection('AttemptedQuizes')
+        .doc(quizname)
+        .get()
+        .then((ds) => {
+             if(ds.exists){
+               if (ds.data()!['marks'] > -1)
+                {
+                  mymarks = ds.data()!['marks'],
+                  
+                }
+             }
+            });
+    print("MY MARKS FOR THE QUIZ " + quizname + " is " + mymarks.toString());
+    return mymarks;
   }
 }

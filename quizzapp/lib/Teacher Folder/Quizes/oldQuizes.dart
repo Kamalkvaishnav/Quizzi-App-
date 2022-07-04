@@ -13,11 +13,12 @@ class OldQuizzes extends StatefulWidget {
 
 class _OldQuizzesState extends State<OldQuizzes> {
   List<dynamic> oldQuizList = [];
+  bool isLoading = true;
 
   getOldQuizList() async {
     List results = await DatabaseManager().getQuizList();
-    print('This is quizz List');
-    print(results);
+    // print('This is quizz List');
+    // print(results);
 
     for (int i = 0; i < results.length; i++) {
       Timestamp quizDateTime =
@@ -31,7 +32,7 @@ class _OldQuizzesState extends State<OldQuizzes> {
         }
       }
     }
-
+    isLoading = false;
     return oldQuizList;
   }
 
@@ -44,7 +45,7 @@ class _OldQuizzesState extends State<OldQuizzes> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return isLoading? CircularProgressIndicator() :  SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -55,14 +56,16 @@ class _OldQuizzesState extends State<OldQuizzes> {
             padding: EdgeInsets.only(top: 16),
             itemBuilder: (context, index) {
               return QuizListCard(
-                  batch: 'IIT - JEE',
+                  batch: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                      ['Batch'],
                   dateTime: oldQuizList[index]['QuizzInfo']['QuizzInfo']
                       ['Date & Time'],
                   questionList: oldQuizList[index]['QuizzQuestions'],
                   quizName: oldQuizList[index]['QuizName']['QuizName'],
-                  quizSubject: 'Maths',
-                  // oldQuizList[index]['QuizzInfo']['Subject'],
-                  teacherEmail: oldQuizList[index]['QuizzInfo']
+                  quizSubject: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                      ['Subject'],
+                 
+                  teacherEmail: oldQuizList[index]['QuizzInfo']['QuizzInfo']
                       ['TeacherEmail']);
             },
           )
