@@ -30,23 +30,22 @@ class DatabaseManager {
   }
 
   Future getAllMarks(String quizname) async {
-    List uIDList = [];
-    await studentList.get().then((value) => value.docs.forEach((element) {
-          dynamic data = (element.data()!);
-          uIDList.add(data['uID']);
-        }));
-    List studentEmail = [];
-    List marksList = [];
-    for (int i = 0; i < uIDList.length; i++) {
-      await studentList
-          .doc(uIDList[i])
-          .collection('AttemptedQuizes')
+    List results = [];
+    try {
+      await quizzes
+          .doc(quizname)
+          .collection('Report')
+          .orderBy('Marks', descending: true)
           .get()
           .then((value) {
         value.docs.forEach((element) {
-          print(element.data());
+          results.add(element.data());
         });
       });
+      print(results);
+      return results;
+    } catch (e) {
+      print('No one have attempted the quiz yet!');
     }
   }
 

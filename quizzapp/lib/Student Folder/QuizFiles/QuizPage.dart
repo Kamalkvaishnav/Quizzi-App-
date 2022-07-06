@@ -57,9 +57,7 @@ class _QuizpageState extends State<Quizpage> {
   @override
   void initState() {
     _value = " ";
-    _timerForInter = Timer.periodic(Duration(seconds: 300), (result) {
-        
-        });
+    _timerForInter = Timer.periodic(Duration(seconds: 300), (result) {});
     super.initState();
   }
 
@@ -291,10 +289,10 @@ class _QuizpageState extends State<Quizpage> {
       //             count: count)));
 
       final userdata = FirebaseAuth.instance.currentUser!;
-      DatabaseManager().quizmarks(widget.ourquizName, count, userdata.uid, userdata.email! );
-      print("This is quiz marks" +
-          DatabaseManager().fetchquizmarks(widget.ourquizName).toString());
-      print("This is count:" + count.toString());
+      DatabaseManager()
+          .quizmarks(widget.ourquizName, count, userdata.uid, userdata.email!);
+      DatabaseManager()
+          .addQuizReport(userdata.email!, count, widget.ourquizName);
     }
   }
 

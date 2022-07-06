@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../Services/Teacher_DatabaseManager.dart';
 import 'quizCard.dart';
@@ -45,32 +46,64 @@ class _OldQuizzesState extends State<OldQuizzes> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading? CircularProgressIndicator() :  SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ListView.builder(
-            itemCount: oldQuizList.length,
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            padding: EdgeInsets.only(top: 16),
-            itemBuilder: (context, index) {
-              return QuizListCard(
-                  batch: oldQuizList[index]['QuizzInfo']['QuizzInfo']
-                      ['Batch'],
-                  dateTime: oldQuizList[index]['QuizzInfo']['QuizzInfo']
-                      ['Date & Time'],
-                  questionList: oldQuizList[index]['QuizzQuestions'],
-                  quizName: oldQuizList[index]['QuizName']['QuizName'],
-                  quizSubject: oldQuizList[index]['QuizzInfo']['QuizzInfo']
-                      ['Subject'],
-                 
-                  teacherEmail: oldQuizList[index]['QuizzInfo']['QuizzInfo']
-                      ['TeacherEmail']);
-            },
+    return isLoading
+        ? Container(
+            color: Colors.white,
+            child: const Center(
+              child: SpinKitThreeBounce(
+                color: Colors.deepPurpleAccent,
+                size: 30.0,
+              ),
+            ),
           )
-        ],
-      ),
-    );
+        : SafeArea(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: GridView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: (oldQuizList.length),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    padding: EdgeInsets.only(top: 16),
+                    itemBuilder: (context, index) {
+                      if (oldQuizList.length > 0) {
+                        return Container(
+                        height: 250,
+                        width: 200,
+                        margin: EdgeInsets.all(7),
+                        child: QuizListCard(
+                          batch: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                              ['Batch'],
+                          dateTime: oldQuizList[index]['QuizzInfo']['QuizzInfo']
+                              ['Date & Time'],
+                          questionList: oldQuizList[index]['QuizzQuestions'],
+                          quizName: oldQuizList[index]['QuizName']['QuizName'],
+                          quizSubject: oldQuizList[index]['QuizzInfo']
+                              ['QuizzInfo']['Subject'],
+                          teacherEmail: oldQuizList[index]['QuizzInfo']
+                              ['QuizzInfo']['TeacherEmail'])
+                        
+                      );
+                      }
+                      return Container(
+                        height: 250,
+                        width: 200,
+                        margin: EdgeInsets.all(7),
+                        child: Text('No quizzes!!')
+                      );
+                     
+                    },
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      // crossAxisSpacing: 2,
+                      // mainAxisSpacing: 2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        );
   }
 }
