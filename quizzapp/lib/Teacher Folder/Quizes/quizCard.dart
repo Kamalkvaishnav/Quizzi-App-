@@ -24,10 +24,37 @@ class QuizListCard extends StatefulWidget {
 }
 
 class _QuizListCardState extends State<QuizListCard> {
+  List QuizMarks = [];
+  List<MarksData> data = [];
   //for fetching database manager methods
   DatabaseManager databaseManager = new DatabaseManager();
 
   //onclick a chatroom is created and user is taken to the messagebox is inside
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchAllMarks();
+    if (QuizMarks.isNotEmpty) {
+      fetchMarksData();
+    }
+  }
+  fetchAllMarks() async {
+    QuizMarks = await DatabaseManager().getAllMarks(widget.quizName);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  fetchMarksData() async {
+    for (int i = 0; i < QuizMarks.length; i++) {
+      data.add(MarksData(
+          QuizMarks[i]['StudentEmail'], QuizMarks[i]['StudentEmail']));
+    }
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +112,7 @@ class _QuizListCardState extends State<QuizListCard> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => QuizReportTeacher(
-                                      quizName: widget.quizName, quizSubject: widget.quizSubject)));
+                                      quizName: widget.quizName, quizSubject: widget.quizSubject, questionList: widget.questionList, QuizMarks: QuizMarks, data: data)));
                         },
                         style: ElevatedButton.styleFrom(
                             primary: Colors.transparent, elevation: 0),
@@ -109,3 +136,4 @@ class _QuizListCardState extends State<QuizListCard> {
     );
   }
 }
+
